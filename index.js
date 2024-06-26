@@ -1,3 +1,4 @@
+require('dotenv').config();
 const helloRoute = require('./src/routes/hello');
 const sketchRoute = require('./src/routes/sketch');
 
