@@ -1,11 +1,12 @@
+const helloRoute = require('./src/routes/hello');
+const sketchRoute = require('./src/routes/sketch');
+
 const fastify = require('fastify')({
   logger: true
 })
 
-// Declare a route
-fastify.get('/', function (request, reply) {
-  reply.send({ hello: 'world' })
-})
+fastify.register(helloRoute);
+fastify.register(sketchRoute);
 
 // Run the server!
 fastify.listen({ port: 3000 }, function (err, address) {
