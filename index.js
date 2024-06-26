@@ -1,6 +1,7 @@
 require('dotenv').config();
 const helloRoute = require('./src/routes/hello');
 const sketchRoute = require('./src/routes/sketch');
+const inferenceRoute = require('./src/routes/inference');
 
 const fastify = require('fastify')({
   logger: true
@@ -8,6 +9,7 @@ const fastify = require('fastify')({
 
 fastify.register(helloRoute);
 fastify.register(sketchRoute);
+fastify.register(inferenceRoute);
 
 // Run the server!
 fastify.listen({ port: 3000 }, function (err, address) {
