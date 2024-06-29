@@ -6,7 +6,7 @@ const anthropic = new Anthropic({
 
 const modelConfig = {
   model: "claude-3-haiku-20240307",
-  max_tokens: 40,
+  max_tokens: 500,
   temperature: 0.7
 }
 
