@@ -4,7 +4,7 @@ module.exports = function (fastify, opts, done) {
     
     const sessionStore = {};
 
-    fastify.get('/createSession', async (request, reply) => {
+    fastify.get('/session', async (request, reply) => {
 
         const requestOrigin = request.raw.headers['origin'];
         const currentDate = new Date();
