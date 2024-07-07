@@ -9,7 +9,7 @@ module.exports = function (fastify, opts, done) {
         const requestOrigin = request.raw.headers['origin'];
 
         const sessionConfig = {
-          headers: { 'Access-Control-Allow-Origin': requestOrigin },
+          headers: { 'Access-Control-Allow-Origin': requestOrigin, 'Access-Control-Allow-Credentials': true, 'Set-Cookie': 'test-stream-cookie=initialized' },
           keepAlive: null
         }
   
