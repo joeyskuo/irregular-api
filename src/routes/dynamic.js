@@ -7,9 +7,11 @@ module.exports = function (fastify, opts, done) {
     fastify.get('/createSession', async (request, reply) => {
 
         const requestOrigin = request.raw.headers['origin'];
+        const currentDate = new Date();
+        const sessionHash = currentDate.getTime().toString(15);
 
         const sessionConfig = {
-          headers: { 'Access-Control-Allow-Origin': requestOrigin, 'Access-Control-Allow-Credentials': true, 'Set-Cookie': 'test-stream-cookie=initialized' },
+          headers: { 'Access-Control-Allow-Origin': requestOrigin, 'Access-Control-Allow-Credentials': true, 'Set-Cookie': `sessionId=${sessionHash}` },
           keepAlive: null
         }
   
