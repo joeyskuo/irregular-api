@@ -7,6 +7,8 @@ module.exports = function (fastify, opts, done) {
     fastify.get('/session', async (request, reply) => {
 
         const requestOrigin = request.raw.headers['origin'];
+        const requestIp = request.ip;
+
         const currentDate = new Date();
         const sessionHash = currentDate.getTime().toString(15);
 
@@ -16,7 +18,11 @@ module.exports = function (fastify, opts, done) {
         }
   
         const session = await createSession(request.raw, reply.raw, sessionConfig);
-        sessionStore['test'] = session;
+        
+        sessionStore[requestIp] = { session: session, 
+                                    sessionId: sessionHash,
+                                    lastActive: Date.now()
+                                };
     });
 
     fastify.get('/:sessionId/dynamic', (request, reply) => {
