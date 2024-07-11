@@ -1,7 +1,5 @@
 const Anthropic = require('@anthropic-ai/sdk');
-const Redis = require("ioredis");
 
-const redis = new Redis();
 const anthropic = new Anthropic({
   apiKey: process.env.CLAUDE_API_KEY,
 });
@@ -23,7 +21,7 @@ module.exports = function (fastify, opts, done) {
 
       const newMessage = {role: "user", content: prompt};
 
-      const storedSessionData = await redis.get(sessionId);
+      const storedSessionData = await fastify.redis.get(sessionId);
       const sessionData = JSON.parse(storedSessionData) ?? {messages: [], usage: {input_tokens: 0, output_tokens: 0}};
 
       sessionData.messages.push(newMessage);
@@ -42,7 +40,7 @@ module.exports = function (fastify, opts, done) {
       sessionData.usage.input_tokens += inferenceUsage.input_tokens;
       sessionData.usage.output_tokens += inferenceUsage.output_tokens;
       console.log(sessionData);
-      await redis.set(sessionId, JSON.stringify(sessionData));
+      await fastify.redis.set(sessionId, JSON.stringify(sessionData));
 
       reply.send({ message: inferenceResponseMessage });
     });
