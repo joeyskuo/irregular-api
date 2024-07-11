@@ -25,13 +25,32 @@ module.exports = function (fastify, opts, done) {
                                 };
     });
 
-    fastify.get('/:sessionId/dynamic', (request, reply) => {
+    fastify.get('/:sessionId/inference', async (request, reply) => {
 
         const { sessionId } = request.params;
+        const requestIp = request.ip;
+        const requestOrigin = request.raw.headers['origin'];
 
-        const session = sessionStore['test'];
-        session.push('Hello!');
-        reply.send('data pushed');
+
+        reply.header('Access-Control-Allow-Origin', requestOrigin);
+
+        const sessionData = sessionStore[requestIp];
+        const session = sessionData.session;
+        sessionData.lastActive = Date.now();
+        
+        if(sessionId != sessionData.sessionId) {
+            session.push('New Session!');
+        } else {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            session.push("Hello! How can");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            session.push(" I assist you");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            session.push("?");
+        }
+
+        reply.code(200).send();
     });
+
     done();
 }
