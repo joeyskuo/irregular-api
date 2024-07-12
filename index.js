@@ -1,7 +1,7 @@
 require('dotenv').config();
 const Fastify = require('fastify');
 const Redis = require("ioredis");
-const { fastifySchedulePlugin } = require('@fastify/schedule');
+const { ToadScheduler } = require('toad-scheduler');
 const TaskManager = require('./src/modules/taskManager');
 
 const sketchRoute = require('./src/routes/sketch');
@@ -19,9 +19,7 @@ const fastify = Fastify({
 
 // add redis to fastify instance
 fastify.decorate('redis', redis);
-
-// register plugins
-fastify.register(fastifySchedulePlugin);
+fastify.decorate('scheduler', new ToadScheduler());
 
 // register routes
 fastify.register(sketchRoute);
