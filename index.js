@@ -2,7 +2,7 @@ require('dotenv').config();
 const Fastify = require('fastify');
 const Redis = require("ioredis");
 const { ToadScheduler } = require('toad-scheduler');
-const TaskManager = require('./src/modules/taskManager');
+const JobManager = require('./src/modules/jobManager');
 
 const sketchRoute = require('./src/routes/sketch');
 const conversationRoute = require('./src/routes/conversation');
@@ -31,11 +31,11 @@ fastify.register(conversationRoute);
 fastify.register(inferenceRoute);
 fastify.register(dynamicRoute);
 // create jobs in taskManager
-const taskManager = new TaskManager(fastify);
+const jobManager = new JobManager(fastify);
 
 // schedule jobs
 fastify.ready().then(() => {
-  fastify.scheduler.addSimpleIntervalJob(taskManager.resetTokenCountJob);
+  jobManager.scheduleJobs();
 })
 
 // start server
