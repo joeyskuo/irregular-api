@@ -4,6 +4,7 @@ module.exports = {
         console.log('resetTokenCount job called...');
         const storedSessionData = await redis.get('irregular-1');
         console.log(storedSessionData);
+        // await redis.flushall();
         return;
     }
 }
