@@ -2,8 +2,6 @@ const { createSession } = require("better-sse");
 
 module.exports = function (fastify, opts, done) {
     
-    const sessionStore = {};
-
     fastify.get('/session', async (request, reply) => {
 
         const requestOrigin = request.raw.headers['origin'];
@@ -19,7 +17,7 @@ module.exports = function (fastify, opts, done) {
   
         const session = await createSession(request.raw, reply.raw, sessionConfig);
         
-        sessionStore[requestIp] = { session: session, 
+        fastify.sessionStore[requestIp] = { session: session, 
                                     sessionId: sessionHash,
                                     lastActive: Date.now()
                                 };
@@ -34,7 +32,7 @@ module.exports = function (fastify, opts, done) {
 
         reply.header('Access-Control-Allow-Origin', requestOrigin);
 
-        const sessionData = sessionStore[requestIp];
+        const sessionData = fastify.sessionStore[requestIp];
         const session = sessionData.session;
         sessionData.lastActive = Date.now();
         
@@ -54,14 +52,14 @@ module.exports = function (fastify, opts, done) {
 
     fastify.get('/session/clear', async (request, reply) => {
 
-        const users = Object.keys(sessionStore);
+        const users = Object.keys(fastify.sessionStore);
         const currentTime = Date.now();
         const msHour = 1000 * 60 * 60; 
 
         users.forEach((user) => {
-            const userSession = sessionStore[user];
+            const userSession = fastify.sessionStore[user];
             if(currentTime - userSession.lastActive >= msHour) {
-                delete sessionStore[user];
+                delete fastify.sessionStore[user];
             }
         });
 

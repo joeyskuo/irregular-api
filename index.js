@@ -12,6 +12,9 @@ const dynamicRoute = require('./src/routes/dynamic');
 // initialize redis connection
 const redis = new Redis();
 
+// create session store
+const sessionStore = {};
+
 // initialize fastify
 const fastify = Fastify({
   logger: true
@@ -19,6 +22,7 @@ const fastify = Fastify({
 
 // add redis to fastify instance
 fastify.decorate('redis', redis);
+fastify.decorate('sessionStore', sessionStore);
 fastify.decorate('scheduler', new ToadScheduler());
 
 // register routes
