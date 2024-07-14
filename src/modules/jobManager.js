@@ -1,5 +1,6 @@
 const { SimpleIntervalJob, Task } = require('toad-scheduler');
 const CacheManager = require('./cacheManager');
+const SessionManager = require('./sessionManager');
 
 class JobManager {
 
@@ -10,6 +11,9 @@ class JobManager {
     scheduleJobs = () => {
         const resetTokenCountTask = new Task('resetTokenCount', () => { CacheManager.resetTokenCount(this.fastify.redis) });
         this.scheduleJob(3600*24*7, resetTokenCountTask);
+
+        const removeInactiveSessionsTask = new Task('removeInactiveSessions', () => { SessionManager.removeInactiveSessions(this.fastify.sessionStore) });
+        this.scheduleJob(3600, removeInactiveSessionsTask);
     }
 
     scheduleJob = (interval, task) => {
