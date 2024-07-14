@@ -9,7 +9,7 @@ class JobManager {
 
     scheduleJobs = () => {
         const resetTokenCountTask = new Task('resetTokenCount', () => { CacheManager.resetTokenCount(this.fastify.redis) });
-        this.scheduleJob(5, resetTokenCountTask);
+        this.scheduleJob(3600*24*7, resetTokenCountTask);
     }
 
     scheduleJob = (interval, task) => {
