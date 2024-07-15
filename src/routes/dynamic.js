@@ -50,21 +50,5 @@ module.exports = function (fastify, opts, done) {
         reply.code(200).send();
     });
 
-    fastify.get('/session/clear', async (request, reply) => {
-
-        const users = Object.keys(fastify.sessionStore);
-        const currentTime = Date.now();
-        const msHour = 1000 * 60 * 60; 
-
-        users.forEach((user) => {
-            const userSession = fastify.sessionStore[user];
-            if(currentTime - userSession.lastActive >= msHour) {
-                delete fastify.sessionStore[user];
-            }
-        });
-
-        reply.code(200).send();
-    });
-
     done();
 }
