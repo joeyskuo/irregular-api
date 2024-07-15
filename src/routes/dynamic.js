@@ -21,6 +21,15 @@ module.exports = function (fastify, opts, done) {
                                     sessionId: sessionHash,
                                     lastActive: Date.now()
                                 };
+
+        const storedSessionData = await fastify.redis.get(requestIp);
+
+        if(storedSessionData) {
+            
+            const sessionData = JSON.parse(storedSessionData);
+            sessionData.messages = [];
+            await fastify.redis.set(requestIp, JSON.stringify(sessionData));
+        }
     });
 
     fastify.get('/:sessionId/inference', async (request, reply) => {
