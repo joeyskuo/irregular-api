@@ -43,17 +43,22 @@ module.exports = function (fastify, opts, done) {
 
         const sessionData = fastify.sessionStore[requestIp];
         const session = sessionData.session;
-        sessionData.lastActive = Date.now();
+
+        const currentTime = Date.now();
+        sessionData.lastActive = currentTime;
+
+        const MESSAGE_EVENT = 'message';
+        const messageId = currentTime.toString(30);
         
         if(sessionId != sessionData.sessionId) {
-            session.push('New Session!');
+            session.push('New Session!', MESSAGE_EVENT, messageId);
         } else {
             await new Promise(resolve => setTimeout(resolve, 1000));
-            session.push("Hello! How can");
+            session.push("Hello! How can", MESSAGE_EVENT, messageId);
             await new Promise(resolve => setTimeout(resolve, 1000));
-            session.push(" I assist you");
+            session.push(" I assist you", MESSAGE_EVENT, messageId);
             await new Promise(resolve => setTimeout(resolve, 1000));
-            session.push("?");
+            session.push("?", MESSAGE_EVENT, messageId);
         }
 
         reply.code(200).send();
