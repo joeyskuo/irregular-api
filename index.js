@@ -4,6 +4,7 @@ require("./src/sentry/instrument.js");
 const Sentry = require("@sentry/node");
 const Fastify = require('fastify');
 const Redis = require("ioredis");
+const Anthropic = require('@anthropic-ai/sdk');
 
 const { ToadScheduler } = require('toad-scheduler');
 const JobManager = require('./src/modules/jobManager');
@@ -16,6 +17,11 @@ const dynamicRoute = require('./src/routes/dynamic');
 
 // initialize redis connection
 const redis = new Redis();
+
+// initialize anthropic instance
+const anthropic = new Anthropic({
+  apiKey: process.env.CLAUDE_API_KEY,
+});
 
 // create session store
 const sessionStore = {};
@@ -30,6 +36,7 @@ Sentry.setupFastifyErrorHandler(fastify);
 
 // add redis to fastify instance
 fastify.decorate('redis', redis);
+fastify.decorate('anthropic', anthropic);
 fastify.decorate('sessionStore', sessionStore);
 fastify.decorate('scheduler', new ToadScheduler());
 
