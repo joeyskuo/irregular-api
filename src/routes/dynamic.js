@@ -32,14 +32,16 @@ module.exports = function (fastify, opts, done) {
         }
     });
 
-    fastify.get('/:sessionId/inference', async (request, reply) => {
+    fastify.post('/:sessionId/inference', async (request, reply) => {
 
         const { sessionId } = request.params;
         const requestIp = request.ip;
-        const requestOrigin = request.raw.headers['origin'];
 
-
-        reply.header('Access-Control-Allow-Origin', requestOrigin);
+        const modelConfig = {
+            model: "claude-3-haiku-20240307",
+            max_tokens: 500,
+            temperature: 0.7
+        }
 
         const sessionData = fastify.sessionStore[requestIp];
         const session = sessionData.session;
@@ -50,16 +52,25 @@ module.exports = function (fastify, opts, done) {
         const MESSAGE_EVENT = 'message';
         const messageId = currentTime.toString(30);
         
-        if(sessionId != sessionData.sessionId) {
-            session.push('New Session!', MESSAGE_EVENT, messageId);
-        } else {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            session.push("Hello! How can", MESSAGE_EVENT, messageId);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            session.push(" I assist you", MESSAGE_EVENT, messageId);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            session.push("?", MESSAGE_EVENT, messageId);
-        }
+        const prompt = request.body.content;
+        const newMessage = {role: "user", content: prompt};
+  
+        const storedInferenceData = await fastify.redis.get(sessionId);
+        const inferenceData = JSON.parse(storedInferenceData) ?? {messages: [], usage: {input_tokens: 0, output_tokens: 0}};
+  
+        inferenceData.messages.push(newMessage);
+        console.log(inferenceData.messages);
+
+        const messageStream = fastify.anthropic.messages.stream({
+            ...modelConfig,
+            messages: inferenceData.messages
+        }).on('text', (text) => {
+            // responseContent += text;
+            session.push(text, MESSAGE_EVENT, messageId);
+        });
+
+        const message = await messageStream.finalMessage();
+        console.log(message);
 
         reply.code(200).send();
     });
