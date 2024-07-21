@@ -59,18 +59,26 @@ module.exports = function (fastify, opts, done) {
         const inferenceData = JSON.parse(storedInferenceData) ?? {messages: [], usage: {input_tokens: 0, output_tokens: 0}};
   
         inferenceData.messages.push(newMessage);
-        console.log(inferenceData.messages);
 
         const messageStream = fastify.anthropic.messages.stream({
             ...modelConfig,
             messages: inferenceData.messages
         }).on('text', (text) => {
-            // responseContent += text;
             session.push(text, MESSAGE_EVENT, messageId);
         });
 
-        const message = await messageStream.finalMessage();
-        console.log(message);
+        const inferenceResponse = await messageStream.finalMessage();
+
+        const inferenceResponseMessage = inferenceResponse.content[0].text;
+        const inferenceUsage = inferenceResponse.usage;
+  
+        const newResponse = {role: "assistant", content: inferenceResponseMessage};
+  
+        inferenceData.messages.push(newResponse);
+        inferenceData.usage.input_tokens += inferenceUsage.input_tokens;
+        inferenceData.usage.output_tokens += inferenceUsage.output_tokens;
+        // console.log(inferenceData);
+        await fastify.redis.set(sessionId, JSON.stringify(inferenceData));
 
         reply.code(200).send();
     });
