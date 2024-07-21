@@ -1,10 +1,13 @@
 require('dotenv').config();
-require("./instrument.js");
+require("./src/sentry/instrument.js");
+
 const Sentry = require("@sentry/node");
 const Fastify = require('fastify');
 const Redis = require("ioredis");
+
 const { ToadScheduler } = require('toad-scheduler');
 const JobManager = require('./src/modules/jobManager');
+const cors = require("@fastify/cors");
 
 const sketchRoute = require('./src/routes/sketch');
 const conversationRoute = require('./src/routes/conversation');
@@ -29,6 +32,15 @@ Sentry.setupFastifyErrorHandler(fastify);
 fastify.decorate('redis', redis);
 fastify.decorate('sessionStore', sessionStore);
 fastify.decorate('scheduler', new ToadScheduler());
+
+// register cors
+fastify.register(cors, {
+  hook: 'preHandler',
+	credentials: true,
+	strictPreflight: false,
+	origin: true,
+	methods: ['GET', 'POST', 'OPTIONS'],
+})
 
 // register routes
 fastify.register(sketchRoute);
