@@ -11,6 +11,8 @@
   "description": "",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.2",
+    "@sentry/node": "^8.19.0",
+    "@sentry/profiling-node": "^8.19.0",
     "better-sse": "^0.12.1",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.0",
