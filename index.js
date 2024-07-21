@@ -1,4 +1,6 @@
 require('dotenv').config();
+require("./instrument.js");
+const Sentry = require("@sentry/node");
 const Fastify = require('fastify');
 const Redis = require("ioredis");
 const { ToadScheduler } = require('toad-scheduler');
@@ -19,6 +21,9 @@ const sessionStore = {};
 const fastify = Fastify({
   logger: true
 });
+
+// add sentry
+Sentry.setupFastifyErrorHandler(fastify);
 
 // add redis to fastify instance
 fastify.decorate('redis', redis);
