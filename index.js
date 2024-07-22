@@ -11,8 +11,7 @@ const JobManager = require('./src/modules/jobManager');
 const cors = require("@fastify/cors");
 
 const sketchRoute = require('./src/routes/sketch');
-// const inferenceRoute = require('./src/routes/inference');
-const dynamicRoute = require('./src/routes/dynamic');
+const inferenceRoute = require('./src/routes/inference');
 
 // initialize redis connection
 const redis = new Redis();
@@ -51,7 +50,6 @@ fastify.register(cors, {
 // register routes
 fastify.register(sketchRoute);
 fastify.register(inferenceRoute);
-fastify.register(dynamicRoute);
 
 // create jobs in taskManager
 const jobManager = new JobManager(fastify);
